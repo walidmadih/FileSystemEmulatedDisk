@@ -1,0 +1,29 @@
+{
+    "files.associations": {
+        "stdbool.h": "c",
+        "disk_emu.h": "c",
+        "sfs_inode.h": "c",
+        "sfs_dir.h": "c",
+        "string.h": "c",
+        "fcntl.h": "c",
+        "time.h": "c",
+        "stdio.h": "c",
+        "stdlib.h": "c",
+        "sfs_api.h": "c",
+        "sfs_fd.h": "c",
+        "cstdlib": "c",
+        "string_view": "c",
+        "tuple": "c",
+        "array": "c",
+        "*.tcc": "c",
+        "memory": "c",
+        "istream": "c",
+        "functional": "c",
+        "utility": "c",
+        "complex": "c"
+    },
+    "C_Cpp.errorSquiggles": "Enabled",
+    "files.exclude": {
+        "**/*.o": true
+    }
+}
