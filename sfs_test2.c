@@ -206,6 +206,7 @@ main(int argc, char **argv)
         if (buffer[k] != (char)(j+k)) {
           fprintf(stderr, "ERROR: data error at offset %d in file %s (%d,%d)\n",
                   j+k, names[i], buffer[k], (char)(j+k));
+          //exit(1);
           error_count++;
           break;
         }
@@ -380,7 +381,7 @@ main(int argc, char **argv)
   int max = 0;
   while (sfs_getnextfilename(filename)) {
 	  if (strcmp(filename, names[max]) != 0) {
-	  	printf("ERROR misnamed file %d: %s %s\n", max, filename, names[max]);
+	  	printf("ERROR misnamed file %d: %s ---> %s\n", max, filename, names[max]);
 		error_count++;
 	  }
 	  max++;

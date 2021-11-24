@@ -1,4 +1,4 @@
-//#define SFS_DEBUG
+#define SFS_DEBUG
 
 #ifdef SFS_DEBUG
 #define debug_print(fmt, ...) printf(fmt, __VA_ARGS__)

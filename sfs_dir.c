@@ -162,19 +162,19 @@ int initialize_entry(int index, char * filename){
 
 //TODO: This is most likely not right, we a new file could have been added at a previous index. It will do for now.
 int get_next_file_in_dir(char* name){
-    while(next_file_index < inode_count){
+    for(next_file_index; next_file_index < get_size(); next_file_index++){
         struct dir_entry* entry = get_directory_entry(next_file_index);
-        if(entry->available){
-            name =  (char*) malloc(FILENAMEBYTES);
+        if(!entry->available){
+            debug_print("Next file in the dir is '%s', directory index: %d\tdirectory size: %d.\n", entry->filename, next_file_index, get_size());
             strcpy(name, entry->filename);
+            next_file_index++;
             return 1;
         }
-        next_file_index++;
     }
-    next_file_index = next_file_index % inode_count;
-    
+    next_file_index = next_file_index % get_size();
     name =  (char*) malloc(FILENAMEBYTES);
     strcpy(name, "\n");
+    debug_print("%s\n", "End of directory.");
     return 0;
 }
 

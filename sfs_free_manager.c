@@ -12,17 +12,13 @@ struct bmap_entry* get_bmap_entry(int index){
 
 int bmap_block_address_from_index(int index){
     int bytes_till_index = index * sizeof(int);
-    int blocks_filled = bytes_till_index / BLOCKSIZE;
-    int offset =FIRSTBITMAPBLOCKADDRESS;
-    int block_address = offset + blocks_filled;
-    return block_address;
+    int block_index = bytes_till_index / BLOCKSIZE;
+    return FIRSTBITMAPBLOCKADDRESS + block_index;
 }
 
 int bmap_blockpointer_from_index(int index){
     int bytes_till_index = index * sizeof(int);
-    int blocks_filled = bytes_till_index / BLOCKSIZE;
-    int blockpointer = index * sizeof(int) - blocks_filled * BLOCKSIZE;
-    return blockpointer;
+    return bytes_till_index % BLOCKSIZE;
 }
 
 void init_array(){
@@ -49,7 +45,7 @@ void update_bmap_entry(int index, int available){
 
     debug_print("%s\n", "Creating bmap entry buffer...");
     char* buffer = malloc(sizeof(int));
-    memcpy(buffer, &available, sizeof(int));
+    memcpy(buffer, &entry->available, sizeof(int));
     debug_print("%s\n", "Buffer has been setup.");
 
     debug_print("%s\n", "Updating bmap entry on the disk...");
@@ -75,11 +71,13 @@ void new_free_bmap(){
 }
 
 int get_free_data_block(){
+    debug_print("\n%s\n\n", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     debug_print("%s\n", "Getting a free data block...");
     for(int i = 0; i < DATABLOCKCOUNT; i++){
         struct bmap_entry* entry = get_bmap_entry(i);
         if(entry->available){
             update_bmap_entry(i, 0);
+            debug_print("\n%s\n\n", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             return entry->block_address;
         }
     }
@@ -107,4 +105,9 @@ void free_data_block(int block_address){
 
 void load_free_bmap(){
     init_array();
+    for(int i = 0; i < DATABLOCKCOUNT; i++){
+        int available;
+        read_block_at_byte(bmap_block_address_from_index(i), &available, bmap_blockpointer_from_index(i), sizeof(int));
+        get_bmap_entry(i)->available = available;
+    }
 }

@@ -37,7 +37,7 @@ void load_old_disk(){
     //TODO: Technically, I believe this should be loaded from the super block,
     // but I'm not sure how to do that since init_disk is the one which opens the file for reading...
     init_disk(DISKNAME, BLOCKSIZE, TOTALBLOCKCOUNT);
-    //load_free_bmap();
+    load_free_bmap();
     load_all_inodes();
     load_directory();
     initialize_fd_table();
@@ -74,6 +74,10 @@ int sfs_getfilesize(const char* filename){
 
 int sfs_fopen(char* filename){
     debug_print("Opening file %s\n", filename);
+    if(strlen(filename) > MAXFILENAME){
+        printf("WARNING: The file name '%s' is %d character long. The max character count is %d\n", filename, strlen(filename), MAXFILENAME);
+        return -1;
+    }
     int inode_number = get_inode_number(filename, 1);
     if(inode_number == -1){
         printf("WARNING: not enough i-nodes: %d, allocate more space for i-node blocks and try again.\n", inode_count);
