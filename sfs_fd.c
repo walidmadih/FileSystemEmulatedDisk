@@ -33,6 +33,21 @@ int get_fd(int inode_number){
     return create_new_fd_entry(inode_number);
 }
 
+int remove_fd(int inode_number){
+     struct fd_entry* entry;
+    for(int i = 0; i < inode_count; i++){
+        entry = get_fd_entry(i);
+        if(entry->inode_number == inode_number){
+            if(entry->available){
+                return 0;
+            }else{
+                return -1;
+            }
+        }
+    }
+    return 0;
+}
+
 
 int create_new_fd_entry(int inode_number){
     struct fd_entry* entry;

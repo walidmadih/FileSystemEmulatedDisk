@@ -183,9 +183,7 @@ int sfs_remove(char* filename){
         debug_print("File '%s' does not exist, returning -1.\n", filename);
         return -1;
     }
-    int fd = get_fd(inode_number);
-    struct fd_entry* entry = get_fd_entry(fd);
-    if(entry->available){
+    if(remove_fd(inode_number) == -1){
         debug_print("WARNING: The file '%s' is currently open.\n", filename);
         return -1;
     }

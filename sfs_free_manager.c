@@ -28,8 +28,6 @@ void init_array(){
     }
 
     free_blocks = (struct bmap_entry*) malloc(sizeof(bmap_entry) * DATABLOCKCOUNT);
-    struct bmap_entry table[DATABLOCKCOUNT];
-    free_blocks = &(table[0]);
 
     for(int i = 0; i < DATABLOCKCOUNT; i++){
         struct bmap_entry entry = {-1, 0};
@@ -89,10 +87,8 @@ int get_free_data_block(){
 
 void free_data_block(int block_address){
     debug_print("\n\n\nFreeing block_address %d from bmap.\n\n\n", block_address);
-    int offset =FIRSTBITMAPBLOCKADDRESS;
-    int blocks_filled = block_address - offset;
-    int bytes_till_index = blocks_filled * BLOCKSIZE;
-    int index = bytes_till_index / sizeof(int);
+
+    int index = block_address - FIRSTDATABLOCKADDRESS;
     
     // Hard delete, might not be necessary, but I don't like seeing the written data when I use 'strings disk_name.sfs'
     char buffer[BLOCKSIZE] = { 0 };
@@ -109,6 +105,6 @@ void load_free_bmap(){
         int available;
         read_block_at_byte(bmap_block_address_from_index(i), &available, bmap_blockpointer_from_index(i), sizeof(int));
         get_bmap_entry(i)->available = available;
-        get_bmap_entry(i)->block_address = bmap_block_address_from_index(i);
+        get_bmap_entry(i)->block_address = FIRSTDATABLOCKADDRESS + i;
     }
 }

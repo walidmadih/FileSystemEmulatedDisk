@@ -20,7 +20,8 @@
         "istream": "c",
         "functional": "c",
         "utility": "c",
-        "complex": "c"
+        "complex": "c",
+        "random": "c"
     },
     "C_Cpp.errorSquiggles": "Enabled",
     "files.exclude": {

@@ -346,10 +346,22 @@ void remove_inode(int inode_number){
     struct inode* node = get_inode(inode_number);
     for(int i = 0; i < 12; i++){
         int block_address = node->direct_addresses[i];
-        if(block_address >= 0){
+        //we dont want to free the super block... therefore not >=
+        if(block_address > 0){
             free_data_block(block_address);
         }
-        //TODO: free indirect blocks & the block containing the indirect blocks
+    }
+    if(node->indirect_address > 0){
+        int entry_count = BLOCKSIZE/sizeof(int);
+        int buffer[entry_count];
+        read_block_at_byte(node->indirect_address, buffer, 0, BLOCKSIZE);
+        for(int i = 0; i < entry_count; i++){
+            int indirect_data_block_to_free = buffer[i];
+            if(indirect_data_block_to_free > 0){
+                free_data_block(indirect_data_block_to_free);
+            }
+        }
+        free_data_block(node->indirect_address);
     }
     initialize_inode(node);
     update_inode_entry(inode_number);
