@@ -109,5 +109,6 @@ void load_free_bmap(){
         int available;
         read_block_at_byte(bmap_block_address_from_index(i), &available, bmap_blockpointer_from_index(i), sizeof(int));
         get_bmap_entry(i)->available = available;
+        get_bmap_entry(i)->block_address = bmap_block_address_from_index(i);
     }
 }

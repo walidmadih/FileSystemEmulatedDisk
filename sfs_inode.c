@@ -15,7 +15,8 @@ void create_inode(int inode_number);
 void load_inode(int inode_number);
 void setup_root_inode();
 void allocate_direct_blocks(int inode_number, int index);
-void allocate_indirect_blocks(int inode_number, int blockpointer);
+void allocate_indirect_data_blocks(int inode_number, int blockpointer);
+void allocate_indirect_block(int inode_number);
 
 void update_inode_entry(int inode_number);
 void read_inode_entry(int inode_number, int* buffer);
@@ -134,16 +135,34 @@ int get_block_address(int inode_number, int* filepointer, int* blockpointer, int
         *blockpointer = *filepointer - (BLOCKSIZE * index);
         debug_print("Block pointer has been set to byte %d of the direct block at index %d.\n", *blockpointer, index);
     }else{
+
+
+        if(node->indirect_address < 0){
+            allocate_indirect_block(inode_number);
+        }
+
         int indirect_file_pointer = *filepointer - BLOCKSIZE * 12;
         int indirect_index = indirect_file_pointer / BLOCKSIZE;
         int indirect_blockpointer = indirect_index * sizeof(int);
+
+
         if(indirect_blockpointer  >= BLOCKSIZE){
             return -1;
         }
+        // THE POINTER GOT OVERWRITTEN 100%
+        // first one came, claimed block 143, wrote some bits, 
+        // and didnt write enough such that the next one's length wont satistfy this
         if(*filepointer + length > node->size){
-            allocate_indirect_blocks(inode_number, indirect_blockpointer);
+
+            int stored_address;
+            read_block_at_byte(node->indirect_address, &stored_address, indirect_blockpointer, sizeof(int));
+            if(stored_address == 0){
+                allocate_indirect_data_blocks(inode_number, indirect_blockpointer);
+            }
         }
+
         read_block_at_byte(node->indirect_address, &block_address, indirect_blockpointer, sizeof(int));
+        
         *blockpointer = indirect_file_pointer - indirect_index * BLOCKSIZE;
     }
     debug_print("Block address has been retrieved: %d.\n", block_address);
@@ -196,9 +215,8 @@ int read_from_inode(int inode_number, char* buffer, int* filepointer, int length
         if(block_address < 0){
             return read_so_far;
         }
-        read_bytes = read_block_at_byte(block_address, buffer, *blockpointer, length);
+        read_bytes = read_block_at_byte(block_address, &buffer[read_so_far], *blockpointer, length);
         *filepointer += read_bytes;
-        buffer = &buffer[read_bytes];
         length -= read_bytes;
         read_so_far += read_bytes;
         debug_print("%d bytes left to read\n", length);
@@ -261,9 +279,8 @@ int write_to_inode(int inode_number, char* buffer, int* filepointer, int length)
         if(block_address < 0){
             return written_so_far;
         }
-        written_bytes = write_block_at_byte(block_address, buffer, *blockpointer, length);
+        written_bytes = write_block_at_byte(block_address, &buffer[written_so_far], *blockpointer, length);
         *filepointer += written_bytes;
-        buffer = &buffer[written_bytes];
         length -= written_bytes;
         written_so_far += written_bytes;
         debug_print("%d bytes left to write\n", length);
@@ -292,17 +309,23 @@ void allocate_direct_blocks(int inode_number, int index){
     }
 }
 
-void allocate_indirect_blocks(int inode_number, int blockpointer){
+void allocate_indirect_block(int inode_number){
+    struct inode* node = get_inode(inode_number);
+    node->indirect_address = get_free_data_block();
+    char buffer[BLOCKSIZE] = {0};
+    write_block_at_byte(node->indirect_address, buffer, 0, BLOCKSIZE);
+    update_inode_entry(inode_number);
+}
+
+void allocate_indirect_data_blocks(int inode_number, int blockpointer){
     debug_print("\n\n%s\n\n", "))))))))))))))))))))))))))))))))))");
     debug_print("\n\nAllocating a free datablock via indirect address for i-node %d at indirect block pointer %d\n\n", inode_number, blockpointer);
+     
+     // Allocate indirect block
     struct inode* node = get_inode(inode_number);
-    // Allocate indirect block
-    if(node->indirect_address < 0){
-        node->indirect_address = get_free_data_block();
-        update_inode_entry(inode_number);
-    }
     int new_data_block = get_free_data_block();
     write_block_at_byte(node->indirect_address, &new_data_block, blockpointer, sizeof(int));
+    
     debug_print("\n\nIndirect data block has been allocated for i-node %d.\n\n", inode_number);
     debug_print("\n\n%s\n\n", "))))))))))))))))))))))))))))))))))");
 }

@@ -26,11 +26,11 @@
  */
 
 
-//#define MAX_BYTES 30000 /* Maximum file size I'll try to create */
-//#define MIN_BYTES 10000         /* Minimum file size */
+#define MAX_BYTES 32000 /* Maximum file size I'll try to create */
+#define MIN_BYTES 10000       /* Minimum file size */
 
-#define MAX_BYTES 12000 /* Maximum file size I'll try to create */
-#define MIN_BYTES 10000         /* Minimum file size */
+//#define MAX_BYTES 12000 /* Maximum file size I'll try to create */
+//#define MIN_BYTES 10000         /* Minimum file size */
 
 /* Just a random test string.
  */
@@ -120,7 +120,7 @@ main(int argc, char **argv)
         chunksize = filesize[i] - j;
       }
       else {
-        chunksize = (rand() % (filesize[i] - j)) + 1;
+        chunksize = 1023; //(rand() % (filesize[i] - j)) + 1;
       }
 
       if ((buffer = malloc(chunksize)) == NULL) {
