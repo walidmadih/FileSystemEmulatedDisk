@@ -61,6 +61,7 @@ void load_directory(){
         if(!entry->available){
             files_found += 1;
             debug_print("A directory entry has been found: index: %d\t name: '%s'\ti-node number: %d\t available: %d\n", i, entry->filename, entry->inode_number, entry->available);
+            debug_print("The associated dir_index: %d\ti-node: %d\t size: %d.\n", i, entry->inode_number, get_inode(inode_number)->size);
             debug_print("Loaded file '%s' with i-node number %d\n", entry->filename, entry->inode_number);
         }
     }

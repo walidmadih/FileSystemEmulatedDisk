@@ -18,7 +18,7 @@
  * do not _require_ that you support this many files. This is just to
  * test the behavior of your code.
  */
-#define MAX_FD 100 
+#define MAX_FD 2
 
 /* The maximum number of bytes we'll try to write to a file. If you
  * support much shorter or larger files for some reason, feel free to
@@ -350,6 +350,7 @@ main(int argc, char **argv)
    * This is just to try to fill up the disk, to see what happens.
    */
   fds[0] = sfs_fopen(names[0]);
+  sfs_fseek(fds[0], strlen(test_str));
   if (fds[0] >= 0) {
     for (i = 0; i < 100000; i++) {
       int x;
@@ -405,6 +406,8 @@ main(int argc, char **argv)
           fprintf(stderr, "ERROR: Wrong byte in %s at position %d (%d,%d)\n", 
                   names[i], j, fixedbuf[j], test_str[j]);
           error_count++;
+          printf("%d Expected:\t'%s'\n %d Read:\t'%s'\n", (int) strlen(test_str), test_str, (int) strlen(fixedbuf), fixedbuf);
+          exit(1);
           break;
         }
       }

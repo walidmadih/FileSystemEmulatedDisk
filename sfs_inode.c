@@ -22,7 +22,6 @@ void update_inode_entry(int inode_number);
 void read_inode_entry(int inode_number, int* buffer);
 
 struct inode* inode_table;
-int entry_int_size = 14;
 
 void update_inode_entry(int inode_number){
     debug_print("%s\n", "/////////////////////////////");
@@ -38,7 +37,7 @@ void update_inode_entry(int inode_number){
     debug_print("i-node block pointer: %d\tblock address: %d\twith %d i-nodes per block\n", blockpointer, block_address, inode_per_block);
 
     struct inode* entry = get_inode(inode_number);
-    int buffer[entry_int_size];
+    int buffer[sizeof(struct inode) / sizeof(int)];
     buffer[0] = entry->size;
     for(int i = 0; i < 12; i++){
         buffer[1 + i] = entry->direct_addresses[i];  
@@ -59,7 +58,7 @@ void load_all_inodes(){
 
 void load_inode(int inode_number){
     struct inode* entry = (struct inode*)malloc(sizeof(struct inode));
-    int buffer[entry_int_size];
+    int buffer[sizeof(struct inode) / sizeof(int)];
     read_inode_entry(inode_number, buffer);
     entry->size = buffer[0];
     for(int i = 0; i < 12; i++){
