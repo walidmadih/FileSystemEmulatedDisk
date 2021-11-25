@@ -163,6 +163,11 @@ int initialize_entry(int index, char * filename){
 
 //TODO: This is most likely not right, we a new file could have been added at a previous index. It will do for now.
 int get_next_file_in_dir(char* name){
+    if(get_size() <= 0){
+        name =  (char*) malloc(FILENAMEBYTES);
+        strcpy(name, " ");
+        return 0;
+    }
     for(next_file_index; next_file_index < get_size(); next_file_index++){
         struct dir_entry* entry = get_directory_entry(next_file_index);
         if(!entry->available){
@@ -174,7 +179,7 @@ int get_next_file_in_dir(char* name){
     }
     next_file_index = next_file_index % get_size();
     name =  (char*) malloc(FILENAMEBYTES);
-    strcpy(name, "\n");
+    strcpy(name, " ");
     debug_print("%s\n", "End of directory.");
     return 0;
 }
