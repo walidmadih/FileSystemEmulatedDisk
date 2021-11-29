@@ -84,6 +84,7 @@ int sfs_fopen(char* filename){
     }
     debug_print("File '%s' has been opened i-node: %d\n", filename, inode_number);
     int fd = get_fd(inode_number);
+    sfs_fseek(fd, get_inode(inode_number)->size);
     debug_print("File has been opened %s\n\n\n", filename);
     return fd;
 }
