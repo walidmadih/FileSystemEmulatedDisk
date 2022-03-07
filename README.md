@@ -1,2 +1,2 @@
 # FileSystemEmulatedDisk
-A file system built on top of an emulated disk
+A file system that can be used with fuse. Mount the file system on a folder and it will behave (mostly) like a regular file system.
